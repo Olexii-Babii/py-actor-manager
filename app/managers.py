@@ -9,13 +9,17 @@ class ActorManager:
         self.table_name = table_name
         self._connection = sqlite3.connect(db_name)
 
-    def create(self, first_name: str, last_name: str) -> None:
+    def create(self, first_name: str, last_name: str) -> Actor:
         self._connection.execute(
             f"INSERT INTO {self.table_name} "
             f"(first_name, last_name) VALUES (?, ?)",
             (first_name, last_name)
         )
+        cursor = self._connection.cursor()
         self._connection.commit()
+        return Actor(id=cursor.lastrowid,
+                     first_name=first_name,
+                     last_name=last_name)
 
     def all(self) -> list:
         actor_cursor = self._connection.execute(
